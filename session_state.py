@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 from typing import Any
+import os
 
 def read_json(file_path):
     with open(file_path, "r") as file:
@@ -10,7 +11,7 @@ class States:
     @staticmethod
     def initialize():
         if "config" not in st.session_state:
-            st.session_state.config = read_json("config.json")
+            st.session_state.config = read_json(f"{os.getcwd()}/resources/config.json")
             print("Initialized session state")
     
     @staticmethod
