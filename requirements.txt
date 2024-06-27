@@ -1,2 +1,2 @@
 langchain
-streamlit
+langchain-community
