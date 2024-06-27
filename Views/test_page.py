@@ -4,9 +4,9 @@ import time
 from session_state import States
 
 if not st.session_state.get("turn_count"):
-    st.session_state.turn_count = 1
+    st.session_state["turn_count"] = 1
 if not st.session_state.get("turn_limit"):
-    st.session_state.turn_limit = 20
+    st.session_state["turn_limit"] = 20
 
 def test_page():
     st.title("스무고개 테스트")
@@ -36,20 +36,20 @@ def test_page():
         chat_history_container = st.container(height=450)
         input_container = st.container(height=100)
 
-        if is_end or st.session_state.turn_count >= st.session_state.turn_limit:
+        if is_end or st.session_state["turn_count"] >= st.session_state["turn_limit"]:
             st.write("테스트가 종료되었습니다.")
-            st.write(f"총 턴 수 : {st.session_state.turn_count} / {st.session_state.turn_limit} 입니다.")
+            st.write(f"총 턴 수 : {st.session_state["turn_count"]} / {st.session_state["turn_limit"]} 입니다.")
         
         with input_container:
             user_input = st.chat_input("type...")
-            st.write(f"턴 수 : {st.session_state.turn_count} / {st.session_state.turn_limit}")
+            st.write(f"턴 수 : {st.session_state["turn_count"]} / {st.session_state["turn_limit"]}")
             if user_input is not None:
                 st.session_state["chat_history"].append({"role" : "user", "content" : user_input})
                 if validate_answer(quiz_info.quiz_answer, user_input):
                     time.sleep(1)
                     st.session_state["chat_history"].append({"role" : "assistant", "content" : right_message})
                     is_end = True
-                elif st.session_state.turn_count < st.session_state.turn_limit:
+                elif st.session_state["turn_count"] < st.session_state["turn_limit"]:
                     res = response_for_wrong_answer(quiz_info, user_input)
                     print(res)
                     st.session_state["chat_history"].append({"role" : "assistant", "content" : res.content})
