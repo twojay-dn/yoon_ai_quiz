@@ -17,6 +17,8 @@ def main():
     
     if st.sidebar.button("재시작"):
         States.set("quiz_info", None)
+        States.set("turn_count", None)
+        States.set("turn_limit", None)
         st.rerun()
 
 if __name__ == "__main__":

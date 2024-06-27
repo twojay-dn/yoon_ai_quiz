@@ -3,12 +3,11 @@ from quiz import rand_pick, welcome_messages, correct_guess_messages, validate_a
 import time
 from session_state import States
 
-if not st.session_state.get("turn_count"):
-    st.session_state["turn_count"] = 1
-if not st.session_state.get("turn_limit"):
-    st.session_state["turn_limit"] = 20
-
 def test_page():
+    if not States.get("turn_count"):
+        States.set("turn_count", 1)
+    if not States.get("turn_limit"):
+        States.set("turn_limit", 20)
     st.title("스무고개 테스트")
     
     is_end = False
@@ -36,24 +35,24 @@ def test_page():
         chat_history_container = st.container(height=450)
         input_container = st.container(height=100)
 
-        if is_end or st.session_state["turn_count"] >= st.session_state["turn_limit"]:
+        if is_end or States.get("turn_count") >= States.get("turn_limit"):
             st.write("테스트가 종료되었습니다.")
-            st.write(f"총 턴 수 : {st.session_state["turn_count"]} / {st.session_state["turn_limit"]} 입니다.")
+            st.write(f"총 턴 수 : {States.get("turn_count")} / {States.get("turn_limit")} 입니다.")
         
         with input_container:
             user_input = st.chat_input("type...")
-            st.write(f"턴 수 : {st.session_state["turn_count"]} / {st.session_state["turn_limit"]}")
+            st.write(f"턴 수 : {States.get("turn_count")} / {States.get("turn_limit")}")
             if user_input is not None:
                 st.session_state["chat_history"].append({"role" : "user", "content" : user_input})
                 if validate_answer(quiz_info.quiz_answer, user_input):
                     time.sleep(1)
                     st.session_state["chat_history"].append({"role" : "assistant", "content" : right_message})
                     is_end = True
-                elif st.session_state["turn_count"] < st.session_state["turn_limit"]:
+                elif States.get("turn_count") < States.get("turn_limit"):
                     res = response_for_wrong_answer(quiz_info, user_input)
                     print(res)
                     st.session_state["chat_history"].append({"role" : "assistant", "content" : res.content})
-                    st.session_state.turn_count += 1
+                    States.set("turn_count", States.get("turn_count") + 1)
                 else:
                     st.session_state["chat_history"].append({"role" : "assistant", "content" : "턴 수가 모두 소진되었습니다. 종료합니다."})
 
