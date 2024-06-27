@@ -8,10 +8,16 @@ def main():
     choose_page = st.sidebar.selectbox("선택", ["퀴즈", "설정"])
     
     if choose_page == "퀴즈":
-        quiz_info = generate_quiz_info()
-        test_page(quiz_info)
+        if States.get("quiz_info") is None:
+            quiz_info = generate_quiz_info()
+            States.set("quiz_info", quiz_info)
+        test_page()
     elif choose_page == "설정":
         config_page()
+    
+    if st.sidebar.button("재시작"):
+        States.set("quiz_info", None)
+        st.rerun()
 
 if __name__ == "__main__":
     main()

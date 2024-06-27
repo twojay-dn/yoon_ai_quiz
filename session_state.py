@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 from typing import Any
+import warnings
 import os
 
 def read_json(file_path):
@@ -15,11 +16,12 @@ class States:
             print("Initialized session state")
     
     @staticmethod
-    def get(key : str) -> Any:
+    def get(key : str, default : Any = None) -> Any:
         States.initialize()
-        value = st.session_state.config[key]
+        value = st.session_state.config.get(key, default)
         if value is None:
-            raise KeyError(f"Key {key} not found in session state")
+            warnings.warn(f"Key {key} not found in session state", UserWarning)
+            return default
         return value
 
     @staticmethod
