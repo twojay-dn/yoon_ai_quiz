@@ -1,12 +1,14 @@
 import streamlit as st
-from quiz import generate_quiz_info, rand_pick, welcome_messages, correct_guess_messages, validate_answer, response_for_wrong_answer
+from quiz import rand_pick, welcome_messages, correct_guess_messages, validate_answer, response_for_wrong_answer
 import time
 
-def test_page():
+turn_count = 1
+turn_limit = 20
+
+def test_page(quiz_info):
     st.title("스무고개 테스트")
     
     is_end = False
-    quiz_info = generate_quiz_info()
     welcome_message = rand_pick(welcome_messages)
     right_message = rand_pick(correct_guess_messages).format(quiz_answer=quiz_info.quiz_answer)
     if not st.session_state.get("chat_history"):
@@ -30,17 +32,26 @@ def test_page():
         chat_history_container = st.container(height=450)
         input_container = st.container(height=85)
 
+        if is_end or turn_count > turn_limit:
+            st.write("테스트가 종료되었습니다.")
+            st.write(f"총 턴 수 : {turn_count} / {turn_limit} 입니다.")
+            if st.button("재시작"):
+                st.rerun()
+
         with input_container:
             user_input = st.chat_input("type...")
+            st.write(f"턴 수 : {turn_count} / {turn_limit}")
             if user_input is not None:
                 st.session_state["chat_history"].append({"role" : "user", "content" : user_input})
                 if validate_answer(quiz_info.quiz_answer, user_input):
                     time.sleep(1)
                     st.session_state["chat_history"].append({"role" : "assistant", "content" : right_message})
+                    is_end = True
                 else:
                     res = response_for_wrong_answer(quiz_info, user_input)
                     print(res)
                     st.session_state["chat_history"].append({"role" : "assistant", "content" : res.content})
+                    turn_count += 1
 
         with chat_history_container:
             for message in st.session_state["chat_history"]:
